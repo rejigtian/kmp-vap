@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.22.1)
+project(vap_frame LANGUAGES CXX)
+add_library(vap_frame SHARED vap_frame.cpp)
+target_compile_features(vap_frame PRIVATE cxx_std_17)
+target_compile_options(vap_frame PRIVATE -Wall -Wextra -Werror)
+target_link_libraries(vap_frame EGL GLESv2 dl)

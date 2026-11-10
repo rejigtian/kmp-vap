@@ -1,0 +1,214 @@
+{
+  "date": "2026-11-10",
+  "device": {
+    "model": "24129PN74C",
+    "name": "Xiaomi 15",
+    "androidApi": 36
+  },
+  "method": {
+    "durationSecEach": 600,
+    "warmupSec": 60,
+    "cpuOneCore100Pct": true,
+    "cpuExcludedTraceWindowSec": [
+      149,
+      184
+    ],
+    "memoryMethod": "dumpsys meminfo --local",
+    "memoryIntervalSec": 15,
+    "pssEarlyWindowSec": [
+      60,
+      120
+    ],
+    "pssLateWindowSec": [
+      540,
+      600
+    ]
+  },
+  "sources": {
+    "beforeCanvas": "Historical before-optimization 10-minute run",
+    "currentCanvasAndNative": "Current same-APK four-case 10-minute run"
+  },
+  "comparisonScope": "beforeCanvas is a separate historical 10min round; currentCanvas vs currentNative is the current same-APK 10min round",
+  "formula": "relativeChangePct = (current / baseline - 1) * 100; negative = decrease; CPU absoluteChange unit = percentage points; memory unit = MiB",
+  "currentApkSha256": "471038ffcc76f5e136fd5860f3aa8539940d5904dfdea44e885cec9f20349ee9",
+  "assetSha256": {
+    "vap_head_b.png": "29352f8427d787fd893fc87c310e6fc2546995d96c761ac02bd95aa3ac581251",
+    "vap_head_a.png": "d0661447e9fc377592535e2b4cc1bb33226874a2eafa0ecc5d770757daed6459",
+    "vap_demo.mp4": "78b260236404b79c6b87f16a2747503f6219ca7ef8724187c6ae3627907d1ae5",
+    "vapx_demo.mp4": "3dbd0efa06c8f123c040f4ffed575bfe49f7a2e374f1237b7a278b8a0228fe96"
+  },
+  "librarySourceSha256": {
+    "build.gradle.kts": "24650e19be45782d690d13cb7bd35f70268fd5388f9a8ae9d526b202a01611ca",
+    "settings.gradle.kts": "caab2190028b108d0922e976a7a21f3fdb5076b963f37bef6ff66275542b6a7e",
+    "ohos-build/build.gradle.kts": "034c5a58074c44316adb7aa10c1170550a304d4e5e28e24e91d9a24ff78abb79",
+    "ohos-build/settings.gradle.kts": "f64272ecdb7397fa1b8f565768484563a8aa7aef6588bb885d5ac6fbd2607d9d",
+    "android-frame/consumer-rules.pro": "be66b3b3ebf10f9766eab340b30b9c8b805987246b91b311ce31d10e47a26c93",
+    "android-frame/build.gradle.kts": "924cc7a3485dc3c340c18b3c5deb62520981b0a23a9fef5e9b33bf1a209c8aa7",
+    "android-frame/src/main/cpp/CMakeLists.txt": "cda9219b681f501bec0f088fa710ef0bf6e47bba5798f2e213fc0c14cecc4df0",
+    "android-frame/src/main/cpp/vap_frame.cpp": "93742e36b432f9c441981179f7565357ce7f62b8f791a856254eddaca4cd6d94",
+    "vap/build.gradle.kts": "b8cefa2172415ce334383ac33aee0ac88242822d88e646731730c338c36862ff",
+    "vap/ohos/build.gradle.kts": "61390a59bba4a2c9cd31501fa281e37568b3524ccf892e658e1c9ee33a7115ea",
+    "vap/src/iosMain/kotlin/io/github/vapkmp/VapImage.ios.kt": "e52ebec3dcfabdd513d3d0f54ee809c21c8f7082d84e47b312622a38373439f7",
+    "vap/src/commonMain/kotlin/io/github/vapkmp/VapImageCache.kt": "71f1168d6c6b41b8e2cd0628b4f27870d723da510111565e8fe1054f3693165a",
+    "vap/src/commonMain/kotlin/io/github/vapkmp/VapCanvas.kt": "2604dd6dd5fc40b350fdfc964f51102f47346f8dbbf6387943dcc28b9760946e",
+    "vap/src/commonMain/kotlin/io/github/vapkmp/VapDecoder.kt": "ab068c9366b8a30cec7eaf2752aa49ca1e175a394bef3292b16ea6906cde2c62",
+    "vap/src/commonMain/kotlin/io/github/vapkmp/VapImage.kt": "366d6f783560c2dfb291f8e61283baee94a01d3415a54cf723fce82c4bebb243",
+    "vap/src/commonMain/kotlin/io/github/vapkmp/VapPlaybackClock.kt": "5a9c8c3f8b7de0fbc3ebbc36d335d69da7eed4a9773d6f487cc8edb4bc3e9b99",
+    "vap/src/commonMain/kotlin/io/github/vapkmp/VapConfig.kt": "9f2ec09ce6e87ca32de3172c031ee378f4e8a3e2b238bb5cdd068b58edb37939",
+    "vap/src/ohosMain/kotlin/io/github/vapkmp/VapImage.ohos.kt": "d7f72740cf1940dab3761880496c58029da334bfdd6838b38b56a01400bbb553",
+    "vap/src/ohosMain/kotlin/io/github/vapkmp/VapResources.ohos.kt": "c6f95c3a707b6b0f812e74b65b7af471067da1506c561a16c705902480f806ff",
+    "vap/src/commonTest/kotlin/io/github/vapkmp/VapImageCacheTest.kt": "083916d9b0bd27cffe6625bd4f629a1f973551e247effe6300cff586ed981385",
+    "vap/src/commonTest/kotlin/io/github/vapkmp/VapEventsTest.kt": "4e71ef68cf2703ae48a134f93d7af06823e4f5b4cc0522aa2b597c479f0f51fe",
+    "vap/src/commonTest/kotlin/io/github/vapkmp/VapClockTest.kt": "0e85b1b94230b090819fc4f0c0eb499de8c149b83110561997ef8a43df09a646",
+    "vap/src/commonTest/kotlin/io/github/vapkmp/VapFrameRetainerTest.kt": "5cc46e4502170952efdf69d2f3f148134b0c7b2031ddd29c2920819ba63d0ddb",
+    "vap/src/commonTest/kotlin/io/github/vapkmp/VapConfigTest.kt": "0d0645cc774107ac243c68bc79ab8c357928f44bf47929c0361d084533118254",
+    "vap/src/androidMain/kotlin/io/github/vapkmp/VapImage.android.kt": "eda1de215b661dbb73c3eccb66749b1518bcfbb04995b44fbffe54327f92e78e"
+  },
+  "reportSourceSha256": "524e38d71fa2b04e089238dd88155ab9286cf37ddd1b1dda0dffd7df8bfd9982",
+  "rows": [
+    {
+      "clip": "vap",
+      "beforeCanvas": {
+        "contentFps": 24.676189040869282,
+        "cpuOneCorePct": 36.681069031292964,
+        "pssMedianMiB": 154.8134765625,
+        "graphicsMedianMiB": 80.7734375,
+        "pssEarlyMiB": 180.52734375,
+        "pssLateMiB": 159.564453125,
+        "pssDeltaMiB": -20.962890625
+      },
+      "currentCanvas": {
+        "contentFps": 24.688555118656595,
+        "cpuOneCorePct": 25.186255210065564,
+        "pssMedianMiB": 105.53515625,
+        "graphicsMedianMiB": 39.41015625,
+        "pssEarlyMiB": 104.89453125,
+        "pssLateMiB": 105.609375,
+        "pssDeltaMiB": 0.71484375
+      },
+      "currentNative": {
+        "contentFps": 24.905142627983384,
+        "cpuOneCorePct": 16.953170540763068,
+        "pssMedianMiB": 118.7939453125,
+        "graphicsMedianMiB": 42.5234375,
+        "pssEarlyMiB": 108.490234375,
+        "pssLateMiB": 127.5712890625,
+        "pssDeltaMiB": 19.0810546875
+      },
+      "changes": {
+        "beforeCanvas": {
+          "cpuOneCorePct": {
+            "baseline": 36.681069031292964,
+            "current": 25.186255210065564,
+            "absoluteChange": -11.4948138212274,
+            "relativeChangePct": -31.33718325226854
+          },
+          "pssMedianMiB": {
+            "baseline": 154.8134765625,
+            "current": 105.53515625,
+            "absoluteChange": -49.2783203125,
+            "relativeChangePct": -31.83076913372317
+          },
+          "graphicsMedianMiB": {
+            "baseline": 80.7734375,
+            "current": 39.41015625,
+            "absoluteChange": -41.36328125,
+            "relativeChangePct": -51.20901441145178
+          }
+        },
+        "currentNative": {
+          "cpuOneCorePct": {
+            "baseline": 16.953170540763068,
+            "current": 25.186255210065564,
+            "absoluteChange": 8.233084669302496,
+            "relativeChangePct": 48.563686948741804
+          },
+          "pssMedianMiB": {
+            "baseline": 118.7939453125,
+            "current": 105.53515625,
+            "absoluteChange": -13.2587890625,
+            "relativeChangePct": -11.161165687040153
+          },
+          "graphicsMedianMiB": {
+            "baseline": 42.5234375,
+            "current": 39.41015625,
+            "absoluteChange": -3.11328125,
+            "relativeChangePct": -7.321330148814987
+          }
+        }
+      }
+    },
+    {
+      "clip": "vapx",
+      "beforeCanvas": {
+        "contentFps": 19.93381793131515,
+        "cpuOneCorePct": 32.28396881990021,
+        "pssMedianMiB": 193.720703125,
+        "graphicsMedianMiB": 116.56640625,
+        "pssEarlyMiB": 185.828125,
+        "pssLateMiB": 193.720703125,
+        "pssDeltaMiB": 7.892578125
+      },
+      "currentCanvas": {
+        "contentFps": 19.92863861790269,
+        "cpuOneCorePct": 25.768268945306946,
+        "pssMedianMiB": 127.3046875,
+        "graphicsMedianMiB": 56.953125,
+        "pssEarlyMiB": 126.056640625,
+        "pssLateMiB": 127.4140625,
+        "pssDeltaMiB": 1.357421875
+      },
+      "currentNative": {
+        "contentFps": 19.979485062402663,
+        "cpuOneCorePct": 14.001149872022642,
+        "pssMedianMiB": 132.8798828125,
+        "graphicsMedianMiB": 48.82421875,
+        "pssEarlyMiB": 124.2060546875,
+        "pssLateMiB": 140.486328125,
+        "pssDeltaMiB": 16.2802734375
+      },
+      "changes": {
+        "beforeCanvas": {
+          "cpuOneCorePct": {
+            "baseline": 32.28396881990021,
+            "current": 25.768268945306946,
+            "absoluteChange": -6.515699874593263,
+            "relativeChangePct": -20.182462419480817
+          },
+          "pssMedianMiB": {
+            "baseline": 193.720703125,
+            "current": 127.3046875,
+            "absoluteChange": -66.416015625,
+            "relativeChangePct": -34.28441800675506
+          },
+          "graphicsMedianMiB": {
+            "baseline": 116.56640625,
+            "current": 56.953125,
+            "absoluteChange": -59.61328125,
+            "relativeChangePct": -51.14104755202573
+          }
+        },
+        "currentNative": {
+          "cpuOneCorePct": {
+            "baseline": 14.001149872022642,
+            "current": 25.768268945306946,
+            "absoluteChange": 11.767119073284304,
+            "relativeChangePct": 84.04394768173707
+          },
+          "pssMedianMiB": {
+            "baseline": 132.8798828125,
+            "current": 127.3046875,
+            "absoluteChange": -5.5751953125,
+            "relativeChangePct": -4.195665434448703
+          },
+          "graphicsMedianMiB": {
+            "baseline": 48.82421875,
+            "current": 56.953125,
+            "absoluteChange": 8.12890625,
+            "relativeChangePct": 16.649331946555733
+          }
+        }
+      }
+    }
+  ]
+}

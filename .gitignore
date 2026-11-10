@@ -1,0 +1,13 @@
+.gradle/
+.kotlin/
+**/build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+**/oh_modules/
+**/.hvigor/
+**/.cxx/
+**/.ohpm/
+**/BuildProfile.ets
+**/__pycache__/
