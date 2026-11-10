@@ -4,9 +4,9 @@
 
 ## 性能报告
 
-[查看性能对比报告（Markdown，含图表）](docs/performance/2026-11-10/README.md) · [下载HTML图表报告](docs/performance/2026-11-10/report.html)
+[在线查看网页版性能报告](https://rejigtian.github.io/kmp-vap/performance/2026-11-10/report.html) · [Markdown版](docs/performance/2026-11-10/README.md) · [下载HTML离线版](docs/performance/2026-11-10/report.html)
 
-Android原机单路基准：优化前Canvas、当前Canvas与原生的CPU、帧率、PSS及Graphics对照。报告标明测试批次、下降幅度与测量边界。HTML下载后用浏览器打开；Markdown可在代码托管平台直接阅读。
+Android原机单路基准：优化前Canvas、当前Canvas与原生的CPU、帧率、PSS及Graphics对照。报告标明测试批次、下降幅度与测量边界。网页版通过GitHub Pages直接打开；Markdown可在仓库内阅读，HTML离线版下载后用浏览器打开。
 
 ```kotlin
 VapImage(

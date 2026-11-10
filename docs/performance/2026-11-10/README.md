@@ -2,7 +2,7 @@
 
 2026-11-10 · Xiaomi 15（24129PN74C）· Android API36 · 单路播放基准
 
-[返回库README](../../../README.md) · [下载HTML图表报告](report.html) · [数值、来源与计算公式](metrics.json)
+[返回库README](../../../README.md) · [在线查看网页版](https://rejigtian.github.io/kmp-vap/performance/2026-11-10/report.html) · [下载HTML离线版](report.html) · [数值、来源与计算公式](metrics.json)
 
 本页可在 GitHub/GitLab 的 Markdown 预览中直接阅读。HTML 下载后用浏览器打开，图表已内嵌，无需启动本地服务。
 
