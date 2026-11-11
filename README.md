@@ -74,3 +74,11 @@ cd ohos-build
 ```
 
 三端编译、iOS Framework 链接、Android 安装、实际播放和性能测量分别验证；鸿蒙 Pixelmap 的 NV12/NV21 转换及各端解码颜色仍需对应设备确认。
+
+Android 修改后执行以下检查，覆盖 API 23 兼容性扫描及共享层主机测试；编译或高版本手机播放通过不能替代低版本兼容性检查。
+
+```sh
+./gradlew :vap:lint :android-frame:lint :vap:testAndroidHostTest
+```
+
+Android 主代码报告位于 `vap/build/reports/lint-results-androidMain.html`。`vap` 显式启用 `com.android.lint`，其 `check` 任务包含 Lint；API 29 硬件缓冲路径由版本判断隔离，API 23–28 使用软件帧适配。

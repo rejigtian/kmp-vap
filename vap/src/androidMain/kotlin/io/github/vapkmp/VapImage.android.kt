@@ -7,7 +7,6 @@ package io.github.vapkmp
  * 生成来源：Codex AI生成
  */
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ColorSpace
@@ -21,6 +20,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.view.Surface
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -43,7 +43,7 @@ import kotlinx.coroutines.android.asCoroutineDispatcher
 /** 仅适配 Android 解码帧与资源；不创建 View，不执行 VAP 合成。 */
 @Composable internal actual fun rememberVapHostActive(): Boolean {
     val context = LocalContext.current.applicationContext
-    SideEffect { androidContext = context }
+    SideEffect { androidCacheDirectory = context.cacheDir }
     val owner = LocalLifecycleOwner.current
     var active by remember(owner) { mutableStateOf(owner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) }
     DisposableEffect(owner) {
@@ -53,13 +53,13 @@ import kotlinx.coroutines.android.asCoroutineDispatcher
     }
     return active
 }
-// 仅应用缓存路径，不持有 Activity；每个宿主进入组合时提供自己的 applicationContext。
-private var androidContext: Context? = null
+// 下载只需要缓存目录，不在全局持有 Context。
+@Volatile private var androidCacheDirectory: File? = null
 internal actual suspend fun resolveVapFile(source: String): String = withContext(Dispatchers.IO) {
     if (!source.startsWith("http://") && !source.startsWith("https://")) {
         return@withContext if (source.startsWith("file:")) File(URI(source)).absolutePath else source
     }
-    val directory = File(requireNotNull(androidContext).cacheDir, "vap-kmp").apply { mkdirs() }
+    val directory = File(requireNotNull(androidCacheDirectory), "vap-kmp").apply { mkdirs() }
     val digest = MessageDigest.getInstance("SHA-256").digest(source.toByteArray()).joinToString("") { "%02x".format(it) }
     val target = File(directory, digest)
     if (!target.isFile || target.length() == 0L) {
@@ -255,16 +255,21 @@ private class PackedFrameAdapter(private val width: Int, private val height: Int
         try { withTimeout(10_000) { available.receive() } }
         catch (timeout: TimeoutCancellationException) { currentCoroutineContext().ensureActive(); error("Timed out waiting for decoded video frame") }
         requireNotNull(texture).updateTexImage(); requireNotNull(texture).getTransformMatrix(matrix)
-        var output: HardwareBuffer? = null
         if (Build.VERSION.SDK_INT >= 29) {
-            output = HardwareBuffer.create(width,height,HardwareBuffer.RGBA_8888,1,
-                HardwareBuffer.USAGE_GPU_SAMPLED_IMAGE or HardwareBuffer.USAGE_GPU_COLOR_OUTPUT)
-            try {
-                if (hardwareTarget == 0L) hardwareTarget = HardwareFrameTarget.create()
-                HardwareFrameTarget.bind(hardwareTarget,output)
-            } catch (error: Throwable) { output.close(); throw error }
+            if (hardwareTarget == 0L) hardwareTarget = HardwareFrameTarget.create()
+            return HardwareFrameTarget.frame(hardwareTarget,width,height,pts) { drawFrame() }
         }
+        // API23–28 使用复用的direct buffer批量适配，帧本身在退休时显式释放。
+        drawFrame()
+        val pixels = requireNotNull(softwarePixels).apply { rewind() }
+        GLES20.glReadPixels(0,0,width,height,GLES20.GL_RGBA,GLES20.GL_UNSIGNED_BYTE,pixels)
+        val bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
         try {
+            bitmap.copyPixelsFromBuffer(pixels)
+            return VapDecodedFrame(bitmap.asImageBitmap(),pts) { bitmap.recycle() }
+        } catch (error: Throwable) { bitmap.recycle(); throw error }
+    }
+    private fun drawFrame() {
         GLES20.glViewport(0,0,width,height); GLES20.glUseProgram(program)
         val p = positionLocation; val uv = uvLocation
         coordinates.position(0); GLES20.glVertexAttribPointer(p,2,GLES20.GL_FLOAT,false,16,coordinates); GLES20.glEnableVertexAttribArray(p)
@@ -273,26 +278,11 @@ private class PackedFrameAdapter(private val width: Int, private val height: Int
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0); GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,textureId)
         GLES20.glUniform1i(samplerLocation,0)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP,0,4)
-        if (output != null) {
-            // 独立帧不会交回可复用队列；写入完成后才交给共享Canvas。
-            GLES20.glFinish()
-            val buffer = output
-            val bitmap = requireNotNull(Bitmap.wrapHardwareBuffer(buffer,ColorSpace.get(ColorSpace.Named.SRGB)))
-            return VapDecodedFrame(bitmap.asImageBitmap(),pts) {
-                bitmap.recycle()
-                buffer.close()
-            }
-        }
-        // API23–28 使用复用的direct buffer批量适配，帧本身在退休时显式释放。
-        val pixels = requireNotNull(softwarePixels).apply { rewind() }
-        GLES20.glReadPixels(0,0,width,height,GLES20.GL_RGBA,GLES20.GL_UNSIGNED_BYTE,pixels)
-        val bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
-        bitmap.copyPixelsFromBuffer(pixels)
-        return VapDecodedFrame(bitmap.asImageBitmap(),pts) { bitmap.recycle() }
-        } catch (error: Throwable) { output?.close(); throw error }
     }
     fun close() {
-        if (hardwareTarget != 0L) { HardwareFrameTarget.destroy(hardwareTarget); hardwareTarget = 0L }
+        if (Build.VERSION.SDK_INT >= 29 && hardwareTarget != 0L) {
+            HardwareFrameTarget.destroy(hardwareTarget); hardwareTarget = 0L
+        }
         if (::surface.isInitialized) surface.release()
         texture?.release(); texture = null
         if (context != EGL14.EGL_NO_CONTEXT) {
@@ -308,9 +298,31 @@ private class PackedFrameAdapter(private val width: Int, private val height: Int
 }
 
 /** 仅桥接公开NDK的AHardwareBuffer/EGLImage，所有权与解码调度仍由Kotlin管理。 */
+@RequiresApi(29)
 private object HardwareFrameTarget {
     init { System.loadLibrary("vap_frame") }
     external fun create(): Long
     external fun bind(handle: Long, buffer: HardwareBuffer)
     external fun destroy(handle: Long)
+
+    // 所有高版本类型及其释放回调均留在此类；旧系统只访问软件帧路径。
+    fun frame(handle: Long, width: Int, height: Int, pts: Long, draw: () -> Unit): VapDecodedFrame {
+        val buffer = HardwareBuffer.create(width,height,HardwareBuffer.RGBA_8888,1,
+            HardwareBuffer.USAGE_GPU_SAMPLED_IMAGE or HardwareBuffer.USAGE_GPU_COLOR_OUTPUT)
+        var bitmap: Bitmap? = null
+        try {
+            bind(handle,buffer)
+            draw()
+            // 独立帧不会交回可复用队列；写入完成后才交给共享Canvas。
+            GLES20.glFinish()
+            val image = requireNotNull(Bitmap.wrapHardwareBuffer(buffer,ColorSpace.get(ColorSpace.Named.SRGB)))
+            bitmap = image
+            return VapDecodedFrame(image.asImageBitmap(),pts) {
+                try { image.recycle() } finally { buffer.close() }
+            }
+        } catch (error: Throwable) {
+            try { bitmap?.recycle() } finally { buffer.close() }
+            throw error
+        }
+    }
 }
